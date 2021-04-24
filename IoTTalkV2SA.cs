@@ -9,7 +9,6 @@ using UnityEngine;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 public class IoTTalkV2SA :  MonoBehaviour {
-    public GameObject temp;
 
     public string api_url = "https://iottalk2.tw/csm";
     public string device_name = "DummyTest";
@@ -26,11 +25,9 @@ public class IoTTalkV2SA :  MonoBehaviour {
     
     public delegate object DeviceFeatureFunc(params object[] args);
 
-    private List<Vector3> position;
-
     System.Random r = new System.Random();
 
-    void Start(){
+    void Awake(){
         // init
         df = new Dictionary<string, System.Object>();
         idf_list = new List<string>();

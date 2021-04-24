@@ -246,8 +246,12 @@ namespace IoTTalkUnity.Dan
                     ctx.on_signal = on_signal;
                     ctx.on_data = on_data;
 
+                    IPAddress[] mqtt_host_ip = Dns.GetHostAddresses(ctx.mqtt_host);
+                    int i = 0;
+                    while (mqtt_host_ip[i] == null) i++;
+
                     ctx.mqtt_client = new MqttClient(
-                            this.context.mqtt_host, 
+                            mqtt_host_ip[i], 
                             this.context.mqtt_port,
                             false,
                             null
