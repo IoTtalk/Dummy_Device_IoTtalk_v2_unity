@@ -68,18 +68,19 @@ public class IoTTalkV2DAI : MonoBehaviour
 
         Type df_type =  df_name_object.GetType();
         dynamic df_name = Convert.ChangeType( df_name_object, df_type);
-        
+
         if ( Global._devices[df_name].push_data == null){
             return;
         }
-            
+
         while (Global._flags[df_name]){
             Type f_type =  Global._devices[df_name].push_data.GetType();
             dynamic f = Convert.ChangeType(Global._devices[df_name].push_data, f_type);
-            dynamic _data = f.Invoke(new System.Object[]{});
+            dynamic _data = f.Invoke(new object[]{});
             _default_client.push(df_name, _data);
-            Thread.Sleep(Global._interval[df_name]*1000);
+            Thread.Sleep(Global._interval[df_name]);
         }
+
         Global._flags.Remove(df_name);
     }
 
@@ -93,10 +94,10 @@ public class IoTTalkV2DAI : MonoBehaviour
     public bool on_signal(string signal, List<string> df_list){
         if( "CONNECT" == signal){
             foreach(string df_name in df_list){
-                if(!Global._flags.ContainsKey(df_name)){
+                if (!Global._flags.ContainsKey(df_name)){
                     Global._flags.Add(df_name, true);
                     Thread t = new Thread(push_data);
-                    t.Start((System.Object)df_name); // 限定一個參數，多參數虛為 list 或 class
+                    t.Start((object)df_name); // 限定一個參數，多參數虛為 list 或 class
                     thread_pool.Add(t);
                 }
             }

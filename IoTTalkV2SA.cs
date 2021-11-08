@@ -9,11 +9,12 @@ using UnityEngine;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 public class IoTTalkV2SA :  MonoBehaviour {
+    public GameObject temp;
 
     public string api_url = "https://iottalk2.tw/csm";
     public string device_name = "DummyTest";
     public string device_model = "Dummy_Device";
-    public int push_interval = 3;
+    public int push_interval = 1000; // millisecond
     public string extra_setup_webpage = "";
     public string device_webpage = "";
     public string username = null;
@@ -25,6 +26,8 @@ public class IoTTalkV2SA :  MonoBehaviour {
     
     public delegate object DeviceFeatureFunc(params object[] args);
 
+    private List<Vector3> position;
+
     System.Random r = new System.Random();
 
     void Awake(){
@@ -35,18 +38,18 @@ public class IoTTalkV2SA :  MonoBehaviour {
         interval = new Dictionary<string, int>();
 
         // IDF push interval
-        interval.Add("Dummy_Sensor", 1);
+        interval.Add("Dummy_Sensor", 1000);
         //---------------------------------------
         // device feature function
         //---------------------------------------
-        df.Add("Dummy_Sensor", ConvertFunctionToObject(this.Dummy_Sensor));
-        df.Add("Dummy_Control", ConvertFunctionToObject(this.Dummy_Control));
+        df.Add("DummySensor-I", ConvertFunctionToObject(this.Dummy_Sensor));
+        df.Add("DummyControl-O", ConvertFunctionToObject(this.Dummy_Control));
 
         // idf name list
-        idf_list.Add("Dummy_Sensor");
+        idf_list.Add("DummySensor-I");
 
         // odf name list
-        odf_list.Add("Dummy_Control");        
+        odf_list.Add("DummyControl-O");        
     }
 
     void Update(){

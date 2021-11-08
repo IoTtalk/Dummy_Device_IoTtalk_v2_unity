@@ -34,6 +34,8 @@ namespace IoTTalkUnity.Dan
         public string name;
         public string mqtt_host;
         public int mqtt_port;
+        public string mqtt_username;
+        public string mqtt_password;
         public MqttClient mqtt_client;
         public Dictionary<string, string> i_chans;
         public Dictionary<string, string> o_chans;
@@ -48,6 +50,8 @@ namespace IoTTalkUnity.Dan
             name = null;
             mqtt_host = null;
             mqtt_port = -1;
+            mqtt_username = null;
+            mqtt_password = null;
             mqtt_client = null;
             i_chans = new Dictionary<string, string>();
             o_chans = new Dictionary<string, string>();
@@ -229,8 +233,8 @@ namespace IoTTalkUnity.Dan
                         sb.Append(dict.Key).Append(": \t[").Append(dict.Value).Append("]\n");
                     }
 
-                    // Headers : sb.ToString()
-                    // Body : request.downloadHandler.text
+                    // Request Headers : sb.ToString()
+                    // Request Body : request.downloadHandler.text
 
                     JObject metadata = JObject.Parse(request.downloadHandler.text);
                     JObject metedata_url = JObject.Parse(metadata["url"].ToString());
@@ -239,6 +243,8 @@ namespace IoTTalkUnity.Dan
                     ctx.name = metadata["name"].ToString();
                     ctx.mqtt_host = metedata_url["host"].ToString();
                     ctx.mqtt_port = int.Parse(metedata_url["port"].ToString());
+                    if( metadata["username"] != null ) ctx.mqtt_username = metadata["username"].ToString();
+                    if (metadata["password"] != null) ctx.mqtt_password = metadata["password"].ToString();
                     ctx.i_chans.Add("ctrl", metadata_ctrl_chans[0].ToString());
                     ctx.o_chans.Add("ctrl", metadata_ctrl_chans[1].ToString());
                     ctx.rev = metadata["rev"].ToString();
@@ -246,15 +252,20 @@ namespace IoTTalkUnity.Dan
                     ctx.on_signal = on_signal;
                     ctx.on_data = on_data;
 
-                    IPAddress[] mqtt_host_ip = Dns.GetHostAddresses(ctx.mqtt_host);
-                    int i = 0;
-                    while (mqtt_host_ip[i] == null) i++;
+                    bool secure = (metedata_url["scheme"].ToString() == "mqtts");
+
+                    if (ctx.mqtt_username == ""){
+                        ctx.mqtt_username = null;
+                        ctx.mqtt_password = null;
+                    }
 
                     ctx.mqtt_client = new MqttClient(
-                            mqtt_host_ip[i], 
+                            ctx.mqtt_host, 
                             this.context.mqtt_port,
-                            false,
-                            null
+                            secure,
+                            null,
+                            null,
+                            MqttSslProtocols.TLSv1_2
                         );
 
                     string client_id = String.Format("iottalk-py-{0}", Guid.NewGuid().ToString("N"));
@@ -266,14 +277,14 @@ namespace IoTTalkUnity.Dan
 
                     byte code = ctx.mqtt_client.Connect(
                             clientId:client_id,
-                            username:null,
-                            password:null,
+                            username: ctx.mqtt_username,
+                            password: ctx.mqtt_password,
                             willRetain:true,
                             willQosLevel:0,
                             willFlag:true,
                             willTopic:metadata_ctrl_chans[0].ToString(),
                             willMessage:will_msg,
-                            cleanSession:false,
+                            cleanSession:true,
                             keepAlivePeriod:60
                         );
 
