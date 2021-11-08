@@ -6,7 +6,7 @@
 ## how to use
 1. Create an Unity Project.
 2. Set API compatibility level to .Net 4.x ( in **Edit > Project Settings > Player** ).
-3. Import two packages, **JsonNet** and **unity_mqtt**, from packages folder.
+3. Import two packages, **JsonNet.9.0.1** and **M2MQTT**, from packages folder.
 4. Create two **Empty Gameobjects** ( recommended to be named **DA** and **SA** ).
 5. Add `IoTTalkV2SA.cs` as a component to SA Gameobject.
 6. Add `IoTTalkV2DAI.cs` as a component to DA Gameobject.
