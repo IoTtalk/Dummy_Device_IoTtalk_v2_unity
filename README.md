@@ -22,7 +22,7 @@
 public object <function_name>(params object[] args)
 {
     // do someting
-    // in odf function, args must be used after change type
+    // in odf function, args must be changed  before use
     // ex: float f = float.Parse(args[0].ToString());
     // if no return value, return null
 }
