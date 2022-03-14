@@ -24,7 +24,7 @@ using uPLibrary.Networking.M2Mqtt.Exceptions;
 namespace IoTTalkUnity.Dan
 {
 
-    public delegate bool OnData(string df_name, System.Object data);
+    public delegate bool OnData(string df_name, JArray data);
     public delegate bool OnSignal(string signal, List<string> df_list);
 
     public class Context {
@@ -158,7 +158,7 @@ namespace IoTTalkUnity.Dan
                     return;
                 }
                 string df = this.context.o_chans.FirstOrDefault(x => x.Value == e.Topic).Key;
-                this.context.on_data(df, JArray.Parse(payload)[0]);
+                this.context.on_data(df, JArray.Parse(payload));
             }
 
         }
@@ -172,10 +172,6 @@ namespace IoTTalkUnity.Dan
             System.Action on_register = null,
             System.Action on_deregister = null
             ) {
-            // string test_url = "https://httpbin.org/post";
-            // string logindataJsonString = "{ \"Name\":\"John\",\"Occupation\":\"gardener\"}";
-            // string profile = "{\"name\": \"Dummy_Test\", \"idf_list\": [[\"Dummy_Sensor\", [null]]], \"odf_list\": [[\"Dummy_Control\", [null]]], \"accept_protos\": [\"mqtt\"], \"profile\": {\"model\": \"Dummy_Device\", \"u_name\": null, \"extra_setup_webpage\": \"\", \"device_webpage\": \"\"}}";
-            // string url = "https://iottalk2.tw/csm/"+Guid.NewGuid().ToString();
 
             Context ctx = this.context;
 

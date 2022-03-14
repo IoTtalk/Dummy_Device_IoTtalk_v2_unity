@@ -9,8 +9,6 @@ using UnityEngine;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 public class IoTTalkV2SA :  MonoBehaviour {
-    public GameObject temp;
-
     public string api_url = "https://iottalk2.tw/csm";
     public string device_name = "DummyTest";
     public string device_model = "Dummy_Device";

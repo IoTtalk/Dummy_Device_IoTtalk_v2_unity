@@ -84,10 +84,14 @@ public class IoTTalkV2DAI : MonoBehaviour
         Global._flags.Remove(df_name);
     }
 
-    public bool on_data(string df_name, System.Object data){
+    public bool on_data(string df_name, JArray datas){
         Type f_type =  Global._devices[df_name].on_data.GetType();
         dynamic f = Convert.ChangeType(Global._devices[df_name].on_data, f_type);
-        f.Invoke(new System.Object[]{data});
+        System.Object[] data_array = new System.Object[datas.Count];
+        for(int idx = 0; idx < datas.Count; idx++){
+            data_array[idx] = datas[idx];
+        }
+        f.Invoke(data_array);
         return true;
     }
 
