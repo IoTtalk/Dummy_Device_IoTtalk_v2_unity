@@ -16,6 +16,7 @@ public class IoTTalkV2SA :  MonoBehaviour {
     public string extra_setup_webpage = "";
     public string device_webpage = "";
     public string username = null;
+    public string id = null;
     public List<string> idf_list;
     public List<string> odf_list;
     public Dictionary<string, int> interval;

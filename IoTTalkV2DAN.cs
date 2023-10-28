@@ -296,7 +296,7 @@ namespace IoTTalkUnity.Dan
             }
         }
 
-        public IEnumerator Asyncderegister()
+        public IEnumerator Asyncderegister(bool deregister=true)
         {   
             if( this.context.mqtt_client == null ){
                 throw new RegistrationErrorException("Not registered");
@@ -305,35 +305,37 @@ namespace IoTTalkUnity.Dan
             string content = "{\"state\":\"offline\", \"rev\":\""+ this.context.rev + "\"}";
             this.context.mqtt_client.Publish(this.context.i_chans["ctrl"] , System.Text.Encoding.UTF8.GetBytes(content), MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, true);
             
-            string DData = "{\"rev\":\""+this.context.rev+"\"}";
-            byte[] bs=Encoding.UTF8.GetBytes(DData);
+            if (deregister == true){
+                string DData = "{\"rev\":\""+this.context.rev+"\"}";
+                byte[] bs=Encoding.UTF8.GetBytes(DData);
 
-            UnityWebRequest request=new UnityWebRequest(String.Format("{0}/{1}", context.url, context.app_id), UnityWebRequest.kHttpVerbDELETE);
+                UnityWebRequest request=new UnityWebRequest(String.Format("{0}/{1}", context.url, context.app_id), UnityWebRequest.kHttpVerbDELETE);
 
-            var uploader = new UploadHandlerRaw(bs);
+                var uploader = new UploadHandlerRaw(bs);
 
-            uploader.contentType="application/json";
+                uploader.contentType="application/json";
 
-            request.uploadHandler = uploader;
+                request.uploadHandler = uploader;
 
-            var downloader = new DownloadHandlerBuffer();
+                var downloader = new DownloadHandlerBuffer();
 
-            request.downloadHandler = downloader;
+                request.downloadHandler = downloader;
 
-            yield return request.SendWebRequest();
+                yield return request.SendWebRequest();
 
-            while(!request.isDone){
-                yield return null;
-            }
-            
-            if(request.responseCode != 200){
-                JObject response;
-                try {
-                    response = JObject.Parse(System.Text.Encoding.UTF8.GetString(downloader.data));
-                } catch (JsonReaderException ex){
-                    throw new RegistrationErrorException("Invalid response from server");
+                while(!request.isDone){
+                    yield return null;
                 }
-                throw new RegistrationErrorException(response["reason"].ToString());
+                
+                if(request.responseCode != 200){
+                    JObject response;
+                    try {
+                        response = JObject.Parse(System.Text.Encoding.UTF8.GetString(downloader.data));
+                    } catch (JsonReaderException ex){
+                        throw new RegistrationErrorException("Invalid response from server");
+                    }
+                    throw new RegistrationErrorException(response["reason"].ToString());
+                }
             }
             
             this.context.mqtt_client.Disconnect();
@@ -342,7 +344,12 @@ namespace IoTTalkUnity.Dan
                 this.context.on_deregister();
             }
 
-            Debug.Log("Deregister Success");
+            if (deregister == true){
+                Debug.Log("Deregister Success");
+            } else {
+                Debug.Log("Disconnect Success");
+            }
+            
         }
 
         private void Client_MqttMsgSubscribed(object sender, MqttMsgSubscribedEventArgs e) {

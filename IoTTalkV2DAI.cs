@@ -120,6 +120,7 @@ public class IoTTalkV2DAI : MonoBehaviour
     public void main(){
         string csmapi = sa_object.GetComponent<IoTTalkV2SA>().api_url;
         string device_name = sa_object.GetComponent<IoTTalkV2SA>().device_name;
+        string id = sa_object.GetComponent<IoTTalkV2SA>().id;
         string device_model = sa_object.GetComponent<IoTTalkV2SA>().device_model;
         int _push_interval = sa_object.GetComponent<IoTTalkV2SA>().push_interval;
         string username = sa_object.GetComponent<IoTTalkV2SA>().username;
@@ -158,7 +159,7 @@ public class IoTTalkV2DAI : MonoBehaviour
                 url:csmapi,
                 on_signal:this.on_signal,
                 on_data:this.on_data,
-                id_:null, 
+                id_:id, 
                 name:device_name,
                 idf_list:idf_list, 
                 odf_list:odf_list,
@@ -174,8 +175,13 @@ public class IoTTalkV2DAI : MonoBehaviour
         foreach (var t in thread_pool){
             t.Abort();
         }
-        var de = _default_client.Asyncderegister();
+        
+        bool is_deregister = true;
+        if (sa_object.GetComponent<IoTTalkV2SA>().id.Length > 0){
+            is_deregister = false;
+        }
 
+        var de = _default_client.Asyncderegister(is_deregister);
         while(de.MoveNext()){}
         Debug.Log("Exit");
     }
